@@ -3,18 +3,34 @@
 namespace App\Http\Controllers;
 
 use App\User;
-use Illuminate\Http\Request;
 
 class TenantController extends Controller
 {
     /**
      * Display the specified resource.
      *
-     * @param  int  $id
-     * @return \Illuminate\Http\Response
+     * @param User $user
+     * @return void
      */
     public function show(User $user)
     {
         //
+    }
+
+    /**
+     * Tenant invitation
+     *
+     * @param User $user
+     * @return \Illuminate\Http\RedirectResponse
+     */
+    public function invitation(User $user)
+    {
+        if (!request()->hasValidSignature() || $user->password) {
+            abort(401);
+        }
+
+        auth()->login($user);
+
+        return redirect()->route('home');
     }
 }

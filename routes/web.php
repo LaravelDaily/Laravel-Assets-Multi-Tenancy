@@ -19,6 +19,12 @@ Auth::routes();
 
 Route::get('/home', 'HomeController@index')->name('home');
 
+Route::get('/invitation/{user}', 'TenantController@invitation')->name('invitation');
+
+Route::get('/password', 'Auth\PasswordController@create')->name('password.create');
+
+Route::post('/password', 'Auth\PasswordController@store')->name('password.store');
+
 Route::domain('{user:domain}.'.config('app.short_url'))->group(function () {
     Route::get('/', 'TenantController@show')->name('tenant');
 });

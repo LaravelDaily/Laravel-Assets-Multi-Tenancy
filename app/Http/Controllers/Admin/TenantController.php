@@ -5,8 +5,10 @@ namespace App\Http\Controllers\Admin;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\StoreTenantRequest;
 use App\Http\Requests\UpdateTenantRequest;
+use App\Notifications\TenantInvitation;
 use App\User;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\URL;
 use Yajra\DataTables\Facades\DataTables;
 
 class TenantController extends Controller
@@ -70,9 +72,13 @@ class TenantController extends Controller
      */
     public function store(StoreTenantRequest $request)
     {
-        User::create($request->only([
+        $user = User::create($request->only([
             'name', 'email', 'domain',
         ]));
+
+        $url = URL::signedRoute('invitation', $user);
+
+        $user->notify(new TenantInvitation($url));
 
         return redirect()->route('admin.tenants.index')->withMessage('Tenant has been created successfully');
     }
