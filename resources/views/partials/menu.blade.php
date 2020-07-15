@@ -8,6 +8,22 @@
 
     <ul class="c-sidebar-nav">
         <li class="c-sidebar-nav-item">
+            <a href="{{ route("home") }}" class="c-sidebar-nav-link">
+                <i class="c-sidebar-nav-icon fas fa-fw fa-tachometer-alt">
+
+                </i>
+                Home
+            </a>
+        </li>
+        <li class="c-sidebar-nav-item">
+            <a href="{{ route("admin.tenants.index") }}" class="c-sidebar-nav-link">
+                <i class="c-sidebar-nav-icon fas fa-fw fa-user">
+
+                </i>
+                Tenant management
+            </a>
+        </li>
+        <li class="c-sidebar-nav-item">
             <a href="#" class="c-sidebar-nav-link" onclick="event.preventDefault(); document.getElementById('logoutform').submit();">
                 <i class="c-sidebar-nav-icon fas fa-fw fa-sign-out-alt">
 
