@@ -28,6 +28,8 @@ Route::get('/password', 'Auth\PasswordController@create')->name('password.create
 Route::post('/password', 'Auth\PasswordController@store')->name('password.store');
 
 Route::group(['as' => 'admin.', 'namespace' => 'Admin', 'prefix' => 'admin', 'middleware' => ['auth']], function () {
+    Route::get('tenants/{tenant}/suspend', 'TenantController@suspend')->name('tenants.suspend');
+
     Route::resource('tenants', 'TenantController');
 
     Route::get('profile', 'ProfileController@edit')->name('profile.edit');

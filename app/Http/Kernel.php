@@ -3,6 +3,7 @@
 namespace App\Http;
 
 use App\Http\Middleware\CheckForPassword;
+use App\Http\Middleware\CheckForSuspension;
 use Illuminate\Foundation\Http\Kernel as HttpKernel;
 
 class Kernel extends HttpKernel
@@ -39,6 +40,7 @@ class Kernel extends HttpKernel
             \App\Http\Middleware\VerifyCsrfToken::class,
             \Illuminate\Routing\Middleware\SubstituteBindings::class,
             CheckForPassword::class,
+            CheckForSuspension::class,
         ],
 
         'api' => [

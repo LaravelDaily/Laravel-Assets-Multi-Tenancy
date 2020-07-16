@@ -20,6 +20,7 @@ class CreateUsersTable extends Migration
             $table->timestamp('email_verified_at')->nullable();
             $table->string('password')->nullable();
             $table->string('domain')->unique()->nullable();
+            $table->boolean('is_suspended')->default(false);
             $table->rememberToken();
             $table->timestamps();
             $table->softDeletes();

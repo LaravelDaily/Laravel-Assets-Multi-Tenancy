@@ -133,4 +133,13 @@ class TenantController extends Controller
 
         return redirect()->back()->withMessage('Tenant has been deleted successfully');
     }
+
+    public function suspend(User $tenant)
+    {
+        $tenant->update([
+            'is_suspended' => !$tenant->is_suspended
+        ]);
+
+        return redirect()->back()->withMessage('Tenant has been suspended successfully');
+    }
 }
