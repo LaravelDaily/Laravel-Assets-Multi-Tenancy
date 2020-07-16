@@ -29,6 +29,10 @@ Route::domain('{user:domain}.'.config('app.short_url'))->group(function () {
     Route::get('/', 'TenantController@show')->name('tenant');
 });
 
-Route::group(['as' => 'admin.', 'namespace' => 'Admin', 'prefix' => 'admin'], function () {
+Route::group(['as' => 'admin.', 'namespace' => 'Admin', 'prefix' => 'admin', 'middleware' => ['auth']], function () {
     Route::resource('tenants', 'TenantController');
+
+    Route::get('profile', 'ProfileController@edit')->name('profile.edit');
+
+    Route::put('profile', 'ProfileController@update')->name('profile.update');
 });

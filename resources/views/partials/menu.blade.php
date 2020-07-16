@@ -24,6 +24,14 @@
             </a>
         </li>
         <li class="c-sidebar-nav-item">
+            <a href="{{ route("admin.profile.edit") }}" class="c-sidebar-nav-link">
+                <i class="c-sidebar-nav-icon fas fa-fw fa-user">
+
+                </i>
+                My profile
+            </a>
+        </li>
+        <li class="c-sidebar-nav-item">
             <a href="#" class="c-sidebar-nav-link" onclick="event.preventDefault(); document.getElementById('logoutform').submit();">
                 <i class="c-sidebar-nav-icon fas fa-fw fa-sign-out-alt">
 
