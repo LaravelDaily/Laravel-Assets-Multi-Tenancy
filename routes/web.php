@@ -13,7 +13,9 @@ use Illuminate\Support\Facades\Route;
 |
 */
 
-Route::redirect('/', '/home');
+Route::group(['domain' => '{user:domain}.'.config('app.short_url'), 'as' => 'tenant.'], function () {
+    Route::get('/', 'TenantController@show')->name('show');
+});
 
 Auth::routes();
 
@@ -24,10 +26,6 @@ Route::get('/invitation/{user}', 'TenantController@invitation')->name('invitatio
 Route::get('/password', 'Auth\PasswordController@create')->name('password.create');
 
 Route::post('/password', 'Auth\PasswordController@store')->name('password.store');
-
-Route::domain('{user:domain}.'.config('app.short_url'))->group(function () {
-    Route::get('/', 'TenantController@show')->name('tenant');
-});
 
 Route::group(['as' => 'admin.', 'namespace' => 'Admin', 'prefix' => 'admin', 'middleware' => ['auth']], function () {
     Route::resource('tenants', 'TenantController');

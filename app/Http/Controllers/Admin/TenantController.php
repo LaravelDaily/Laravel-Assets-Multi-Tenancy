@@ -43,7 +43,7 @@ class TenantController extends Controller
                 return $row->email ? $row->email : "";
             });
             $table->editColumn('domain', function ($row) {
-                return $row->domain ? route('tenant', $row) : "";
+                return $row->domain ? route('tenant.show', $row) : "";
             });
 
             $table->rawColumns(['actions']);

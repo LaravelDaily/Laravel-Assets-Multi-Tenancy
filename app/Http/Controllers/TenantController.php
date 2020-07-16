@@ -14,7 +14,7 @@ class TenantController extends Controller
      */
     public function show(User $user)
     {
-        //
+        return redirect()->to('/home');
     }
 
     /**
