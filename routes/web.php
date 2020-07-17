@@ -17,6 +17,8 @@ Route::group(['domain' => '{user:domain}.'.config('app.short_url'), 'as' => 'ten
     Route::get('/', 'TenantController@show')->name('show');
 });
 
+Route::redirect('/', '/home');
+
 Auth::routes();
 
 Route::get('/home', 'HomeController@index')->name('home');
