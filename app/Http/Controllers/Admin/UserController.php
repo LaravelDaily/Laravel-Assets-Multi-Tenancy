@@ -3,32 +3,37 @@
 namespace App\Http\Controllers\Admin;
 
 use App\Http\Controllers\Controller;
-use App\Http\Requests\StoreTenantRequest;
-use App\Http\Requests\UpdateTenantRequest;
-use App\Notifications\TenantInvitation;
+use App\Http\Requests\StoreUserRequest;
+use App\Http\Requests\UpdateUserRequest;
+use App\Notifications\UserInvitation;
 use App\User;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\URL;
 use Yajra\DataTables\Facades\DataTables;
 
-class TenantController extends Controller
+class UserController extends Controller
 {
     /**
      * Display a listing of the resource.
      *
      * @param Request $request
      * @return \Illuminate\Http\Response
+     * @throws \Exception
      */
     public function index(Request $request)
     {
         if ($request->ajax()) {
-            $query = User::query()->select(sprintf('%s.*', (new User)->getTable()));
+            $query = User::query()
+                        ->select(sprintf('%s.*', (new User)->getTable()))
+                        ->whereHas('roles', function ($query) {
+                            $query->whereId(3);
+                        });
             $table = DataTables::of($query);
 
             $table->addColumn('actions', '&nbsp;');
 
             $table->editColumn('actions', function ($row) {
-                $crudRoutePart = 'tenants';
+                $crudRoutePart = 'users';
 
                 return view('partials.datatableActions', compact('crudRoutePart', 'row'));
             });
@@ -42,16 +47,13 @@ class TenantController extends Controller
             $table->editColumn('email', function ($row) {
                 return $row->email ? $row->email : "";
             });
-            $table->editColumn('domain', function ($row) {
-                return $row->domain ? route('tenant.show', $row) : "";
-            });
 
             $table->rawColumns(['actions']);
 
             return $table->make(true);
         }
 
-        return view('admin.tenants.index');
+        return view('admin.users.index');
     }
 
     /**
@@ -61,87 +63,79 @@ class TenantController extends Controller
      */
     public function create()
     {
-        return view('admin.tenants.create');
+        return view('admin.users.create');
     }
 
     /**
      * Store a newly created resource in storage.
      *
-     * @param StoreTenantRequest $request
+     * @param  StoreUserRequest  $request
      * @return \Illuminate\Http\Response
      */
-    public function store(StoreTenantRequest $request)
+    public function store(StoreUserRequest $request)
     {
         $user = User::create($request->only([
-            'name', 'email', 'domain',
+            'name', 'email',
         ]));
 
-        $user->roles()->attach(2);
+        $user->roles()->attach(3);
 
         $url = URL::signedRoute('invitation', $user);
 
-        $user->notify(new TenantInvitation($url));
+        $user->notify(new UserInvitation($url));
 
-        return redirect()->route('admin.tenants.index')->withMessage('Tenant has been created successfully');
+        return redirect()->route('admin.users.index')->withMessage('User has been created successfully');
     }
 
     /**
      * Display the specified resource.
      *
-     * @param  \App\User  $tenant
+     * @param  User $user
      * @return \Illuminate\Http\Response
      */
-    public function show(User $tenant)
+    public function show(User $user)
     {
-        return view('admin.tenants.show', compact('tenant'));
+        return view('admin.users.show', compact('user'));
     }
 
     /**
      * Show the form for editing the specified resource.
      *
-     * @param  \App\User  $tenant
+     * @param User $user
      * @return \Illuminate\Http\Response
      */
-    public function edit(User $tenant)
+    public function edit(User $user)
     {
-        return view('admin.tenants.edit', compact('tenant'));
+        return view('admin.users.edit', compact('user'));
     }
 
     /**
      * Update the specified resource in storage.
      *
-     * @param UpdateTenantRequest $request
-     * @param \App\User $tenant
+     * @param UpdateUserRequest $request
+     * @param User $user
      * @return \Illuminate\Http\Response
      */
-    public function update(UpdateTenantRequest $request, User $tenant)
+    public function update(UpdateUserRequest $request, User $user)
     {
-        $tenant->update($request->only([
-            'name', 'email', 'domain'
+        $user->update($request->only([
+            'name', 'email'
         ]));
 
-        return redirect()->route('admin.tenants.index')->withMessage('Tenant has been updated successfully');
+        return redirect()->route('admin.users.index')->withMessage('User has been updated successfully');
     }
 
     /**
      * Remove the specified resource from storage.
      *
-     * @param  \App\User  $tenant
+     * @param User $user
      * @return \Illuminate\Http\Response
+     * @throws \Exception
      */
-    public function destroy(User $tenant)
+    public function destroy(User $user)
     {
-        $tenant->delete();
+        $user->delete();
 
-        return redirect()->back()->withMessage('Tenant has been deleted successfully');
-    }
-
-    public function suspend(User $tenant)
-    {
-        $tenant->update([
-            'is_suspended' => !$tenant->is_suspended
-        ]);
-
-        return redirect()->back()->withMessage('Tenant has been suspended successfully');
+        return redirect()->back()->withMessage('User has been deleted successfully');
     }
 }

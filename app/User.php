@@ -2,6 +2,7 @@
 
 namespace App;
 
+use App\Traits\MultiTenantUserTrait;
 use Iatstuti\Database\Support\CascadeSoftDeletes;
 use Illuminate\Contracts\Auth\MustVerifyEmail;
 use Illuminate\Database\Eloquent\SoftDeletes;
@@ -10,7 +11,7 @@ use Illuminate\Notifications\Notifiable;
 
 class User extends Authenticatable
 {
-    use Notifiable, SoftDeletes, CascadeSoftDeletes;
+    use Notifiable, SoftDeletes, CascadeSoftDeletes, MultiTenantUserTrait;
 
     /**
      * The attributes that are mass assignable.
@@ -54,6 +55,21 @@ class User extends Authenticatable
         });
     }
 
+    public function getIsAdminAttribute()
+    {
+        return $this->roles->contains(1);
+    }
+
+    public function getIsTenantAdminAttribute()
+    {
+        return $this->roles->contains(2);
+    }
+
+    public function getIsTenantUserAttribute()
+    {
+        return $this->roles->contains(3);
+    }
+
     public function tenant()
     {
         return $this->belongsTo(self::class, 'tenant_id');
@@ -62,5 +78,10 @@ class User extends Authenticatable
     public function tenantUsers()
     {
         return $this->hasMany(self::class, 'tenant_id');
+    }
+
+    public function roles()
+    {
+        return $this->belongsToMany(Role::class);
     }
 }

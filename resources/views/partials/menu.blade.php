@@ -15,14 +15,26 @@
                 Home
             </a>
         </li>
-        <li class="c-sidebar-nav-item">
-            <a href="{{ route("admin.tenants.index") }}" class="c-sidebar-nav-link">
-                <i class="c-sidebar-nav-icon fas fa-fw fa-user">
+        @if (auth()->user()->is_admin)
+            <li class="c-sidebar-nav-item">
+                <a href="{{ route("admin.tenants.index") }}" class="c-sidebar-nav-link">
+                    <i class="c-sidebar-nav-icon fas fa-fw fa-user">
 
-                </i>
-                Tenant management
-            </a>
-        </li>
+                    </i>
+                    Tenant management
+                </a>
+            </li>
+        @endif
+        @if (auth()->user()->is_tenant_admin)
+            <li class="c-sidebar-nav-item">
+                <a href="{{ route("admin.users.index") }}" class="c-sidebar-nav-link">
+                    <i class="c-sidebar-nav-icon fas fa-fw fa-user">
+
+                    </i>
+                    User management
+                </a>
+            </li>
+        @endif
         <li class="c-sidebar-nav-item">
             <a href="{{ route("admin.profile.edit") }}" class="c-sidebar-nav-link">
                 <i class="c-sidebar-nav-icon fas fa-fw fa-user">
