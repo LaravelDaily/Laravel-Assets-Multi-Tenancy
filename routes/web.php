@@ -36,6 +36,8 @@ Route::group(['as' => 'admin.', 'namespace' => 'Admin', 'prefix' => 'admin', 'mi
 
     Route::resource('users', 'UserController');
 
+    Route::resource('roles', 'RoleController');
+
     Route::get('profile', 'ProfileController@edit')->name('profile.edit');
 
     Route::put('profile', 'ProfileController@update')->name('profile.update');

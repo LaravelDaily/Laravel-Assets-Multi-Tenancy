@@ -6,7 +6,7 @@
         <div class="col-lg-12">
             <div class="card">
                 <div class="card-header">
-                    User management
+                    Role management
                 </div>
 
                 <div class="card-body">
@@ -17,7 +17,7 @@
                     @endif
 
                     <div class="form-group">
-                        <a href="{{ route('admin.users.create') }}" class="btn btn-success">Create user</a>
+                        <a href="{{ route('admin.roles.create') }}" class="btn btn-success">Create role</a>
                     </div>
                     <table class=" table table-bordered table-striped table-hover ajaxTable datatable">
                         <thead>
@@ -26,13 +26,7 @@
                                 ID
                             </th>
                             <th>
-                                Name
-                            </th>
-                            <th>
-                                Email
-                            </th>
-                            <th>
-                                Role
+                                Title
                             </th>
                             <th>
                                 &nbsp;
@@ -55,12 +49,10 @@
             serverSide: true,
             retrieve: true,
             aaSorting: [],
-            ajax: "{{ route('admin.users.index') }}",
+            ajax: "{{ route('admin.roles.index') }}",
             columns: [
                 { data: 'id', name: 'id' },
-                { data: 'name', name: 'name' },
-                { data: 'email', name: 'email' },
-                { data: 'role', name: 'role' },
+                { data: 'title', name: 'title' },
                 { data: 'actions', name: '' }
             ],
             orderCellsTop: true,

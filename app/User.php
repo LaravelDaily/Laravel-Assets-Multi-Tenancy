@@ -44,6 +44,10 @@ class User extends Authenticatable
         'tenantUsers'
     ];
 
+    protected $with = [
+        'roles',
+    ];
+
     protected static function booted()
     {
         static::deleting(function ($user) {
@@ -57,17 +61,17 @@ class User extends Authenticatable
 
     public function getIsAdminAttribute()
     {
-        return $this->roles->contains(1);
+        return $this->roles()->withoutGlobalScopes()->whereId(1)->exists();
     }
 
     public function getIsTenantAdminAttribute()
     {
-        return $this->roles->contains(2);
+        return $this->roles()->withoutGlobalScopes()->whereId(2)->exists();
     }
 
     public function getIsTenantUserAttribute()
     {
-        return $this->roles->contains(3);
+        return $this->roles()->withoutGlobalScopes()->whereId(3)->exists();
     }
 
     public function tenant()
@@ -83,5 +87,10 @@ class User extends Authenticatable
     public function roles()
     {
         return $this->belongsToMany(Role::class);
+    }
+
+    public function scopeTenantUsers($query)
+    {
+        return $query->where('tenant_id', auth()->id());
     }
 }

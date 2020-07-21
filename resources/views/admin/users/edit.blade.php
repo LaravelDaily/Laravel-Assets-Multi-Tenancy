@@ -28,6 +28,19 @@
                 @endif
             </div>
             <div class="form-group">
+                <label for="role_id">Role</label>
+                <select class="form-control select2 {{ $errors->has('role_id') ? 'is-invalid' : '' }}" name="role_id" id="role_id" required>
+                    @foreach($roles as $id => $roles)
+                        <option value="{{ $id }}" {{ old('role_id', optional($user->roles->first())->id ?? 3) == $id ? 'selected' : '' }}>{{ $roles }}</option>
+                    @endforeach
+                </select>
+                @if($errors->has('role_id'))
+                    <div class="invalid-feedback">
+                        {{ $errors->first('role_id') }}
+                    </div>
+                @endif
+            </div>
+            <div class="form-group">
                 <button class="btn btn-success" type="submit">
                     Edit
                 </button>
@@ -35,4 +48,10 @@
         </form>
     </div>
 </div>
+@endsection
+
+@section('scripts')
+<script>
+    $('.select2').select2()
+</script>
 @endsection

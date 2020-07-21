@@ -24,14 +24,21 @@
                     Tenant management
                 </a>
             </li>
-        @endif
-        @if (auth()->user()->is_tenant_admin)
+        @elseif (auth()->user()->is_tenant_admin)
             <li class="c-sidebar-nav-item">
                 <a href="{{ route("admin.users.index") }}" class="c-sidebar-nav-link">
                     <i class="c-sidebar-nav-icon fas fa-fw fa-user">
 
                     </i>
                     User management
+                </a>
+            </li>
+            <li class="c-sidebar-nav-item">
+                <a href="{{ route("admin.roles.index") }}" class="c-sidebar-nav-link">
+                    <i class="c-sidebar-nav-icon fas fa-fw fa-user">
+
+                    </i>
+                    Role management
                 </a>
             </li>
         @endif

@@ -6,6 +6,7 @@ use App\Http\Controllers\Controller;
 use App\Http\Requests\StoreUserRequest;
 use App\Http\Requests\UpdateUserRequest;
 use App\Notifications\UserInvitation;
+use App\Role;
 use App\User;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\URL;
@@ -25,9 +26,7 @@ class UserController extends Controller
         if ($request->ajax()) {
             $query = User::query()
                         ->select(sprintf('%s.*', (new User)->getTable()))
-                        ->whereHas('roles', function ($query) {
-                            $query->whereId(3);
-                        });
+                        ->where('tenant_id', auth()->id());
             $table = DataTables::of($query);
 
             $table->addColumn('actions', '&nbsp;');
@@ -47,6 +46,9 @@ class UserController extends Controller
             $table->editColumn('email', function ($row) {
                 return $row->email ? $row->email : "";
             });
+            $table->editColumn('role', function ($row) {
+                return $row->roles->first() ? $row->roles->first()->title : "";
+            });
 
             $table->rawColumns(['actions']);
 
@@ -63,7 +65,9 @@ class UserController extends Controller
      */
     public function create()
     {
-        return view('admin.users.create');
+        $roles = Role::pluck('title', 'id');
+
+        return view('admin.users.create', compact('roles'));
     }
 
     /**
@@ -74,11 +78,15 @@ class UserController extends Controller
      */
     public function store(StoreUserRequest $request)
     {
+        $request->validate([
+            'role_id' => 'integer|in:' . Role::pluck('id')->implode(','),
+        ]);
+
         $user = User::create($request->only([
             'name', 'email',
         ]));
 
-        $user->roles()->attach(3);
+        $user->roles()->attach($request->input('role_id'));
 
         $url = URL::signedRoute('invitation', $user);
 
@@ -90,37 +98,55 @@ class UserController extends Controller
     /**
      * Display the specified resource.
      *
-     * @param  User $user
+     * @param  int $user
      * @return \Illuminate\Http\Response
      */
-    public function show(User $user)
+    public function show($user)
     {
+        $user = User::where('tenant_id', auth()->id())->findOrFail($user);
+
         return view('admin.users.show', compact('user'));
     }
 
     /**
      * Show the form for editing the specified resource.
      *
-     * @param User $user
+     * @param int $user
      * @return \Illuminate\Http\Response
      */
-    public function edit(User $user)
+    public function edit($user)
     {
-        return view('admin.users.edit', compact('user'));
+        $user = User::where('tenant_id', auth()->id())->findOrFail($user);
+
+        $roles = Role::pluck('title', 'id');
+
+        $user->load('roles');
+
+        return view('admin.users.edit', compact('user', 'roles'));
     }
 
     /**
      * Update the specified resource in storage.
      *
      * @param UpdateUserRequest $request
-     * @param User $user
+     * @param int $user
      * @return \Illuminate\Http\Response
      */
-    public function update(UpdateUserRequest $request, User $user)
+    public function update(UpdateUserRequest $request, $user)
     {
+        $user = User::where('tenant_id', auth()->id())->findOrFail($user);
+
+        $request->validate([
+            'role_id' => 'integer|in:' . Role::pluck('id')->implode(','),
+        ]);
+
         $user->update($request->only([
             'name', 'email'
         ]));
+
+        if (optional($user->roles->first())->id !== $request->input('role_id', 3)) {
+            $user->roles()->sync($request->input('role_id', 3));
+        }
 
         return redirect()->route('admin.users.index')->withMessage('User has been updated successfully');
     }
@@ -128,13 +154,15 @@ class UserController extends Controller
     /**
      * Remove the specified resource from storage.
      *
-     * @param User $user
+     * @param int $user
      * @return \Illuminate\Http\Response
      * @throws \Exception
      */
-    public function destroy(User $user)
+    public function destroy($user)
     {
-        $user->delete();
+        User::where('tenant_id', auth()->id())
+            ->findOrFail($user)
+            ->delete();
 
         return redirect()->back()->withMessage('User has been deleted successfully');
     }
