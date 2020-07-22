@@ -23,6 +23,16 @@
                     {{ $role->title ?? '' }}
                 </td>
             </tr>
+            <tr>
+                <th>
+                    Permissions
+                </th>
+                <td>
+                    @foreach($role->permissions as $key => $item)
+                        <span class="badge badge-info">{{ $item->title }}</span>
+                    @endforeach
+                </td>
+            </tr>
         </table>
         <div class="form-group">
             <a href="{{ route('admin.roles.index') }}" class="btn btn-info">

@@ -8,7 +8,9 @@ use App\Http\Requests\UpdateTenantRequest;
 use App\Notifications\TenantInvitation;
 use App\User;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Gate;
 use Illuminate\Support\Facades\URL;
+use Symfony\Component\HttpFoundation\Response;
 use Yajra\DataTables\Facades\DataTables;
 
 class TenantController extends Controller
@@ -21,16 +23,21 @@ class TenantController extends Controller
      */
     public function index(Request $request)
     {
+        abort_if(Gate::denies('tenant_management_access'), Response::HTTP_FORBIDDEN, '403 Forbidden');
+
         if ($request->ajax()) {
-            $query = User::query()->select(sprintf('%s.*', (new User)->getTable()));
+            $query = User::query()
+                ->select(sprintf('%s.*', (new User)->getTable()))
+                ->whereNotNull('domain');
             $table = DataTables::of($query);
 
             $table->addColumn('actions', '&nbsp;');
 
             $table->editColumn('actions', function ($row) {
-                $crudRoutePart = 'tenants';
+                $crudRoutePart    = 'tenants';
+                $permissionPrefix = 'tenant_management_';
 
-                return view('partials.datatableActions', compact('crudRoutePart', 'row'));
+                return view('partials.datatableActions', compact('crudRoutePart', 'row', 'permissionPrefix'));
             });
 
             $table->editColumn('id', function ($row) {
@@ -61,6 +68,8 @@ class TenantController extends Controller
      */
     public function create()
     {
+        abort_if(Gate::denies('tenant_management_create'), Response::HTTP_FORBIDDEN, '403 Forbidden');
+
         return view('admin.tenants.create');
     }
 
@@ -88,22 +97,30 @@ class TenantController extends Controller
     /**
      * Display the specified resource.
      *
-     * @param  \App\User  $tenant
+     * @param  int  $tenant
      * @return \Illuminate\Http\Response
      */
-    public function show(User $tenant)
+    public function show($tenant)
     {
+        abort_if(Gate::denies('tenant_management_show'), Response::HTTP_FORBIDDEN, '403 Forbidden');
+
+        $tenant = User::whereNotNull('domain')->findOrFail($tenant);
+
         return view('admin.tenants.show', compact('tenant'));
     }
 
     /**
      * Show the form for editing the specified resource.
      *
-     * @param  \App\User  $tenant
+     * @param  int  $tenant
      * @return \Illuminate\Http\Response
      */
-    public function edit(User $tenant)
+    public function edit($tenant)
     {
+        abort_if(Gate::denies('tenant_management_edit'), Response::HTTP_FORBIDDEN, '403 Forbidden');
+
+        $tenant = User::whereNotNull('domain')->findOrFail($tenant);
+
         return view('admin.tenants.edit', compact('tenant'));
     }
 
@@ -111,11 +128,13 @@ class TenantController extends Controller
      * Update the specified resource in storage.
      *
      * @param UpdateTenantRequest $request
-     * @param \App\User $tenant
+     * @param int $tenant
      * @return \Illuminate\Http\Response
      */
-    public function update(UpdateTenantRequest $request, User $tenant)
+    public function update(UpdateTenantRequest $request, $tenant)
     {
+        $tenant = User::whereNotNull('domain')->findOrFail($tenant);
+
         $tenant->update($request->only([
             'name', 'email', 'domain'
         ]));
@@ -126,18 +145,26 @@ class TenantController extends Controller
     /**
      * Remove the specified resource from storage.
      *
-     * @param  \App\User  $tenant
+     * @param  int  $tenant
      * @return \Illuminate\Http\Response
      */
-    public function destroy(User $tenant)
+    public function destroy($tenant)
     {
-        $tenant->delete();
+        abort_if(Gate::denies('tenant_management_delete'), Response::HTTP_FORBIDDEN, '403 Forbidden');
+
+        User::whereNotNull('domain')
+            ->findOrFail($tenant)
+            ->delete();
 
         return redirect()->back()->withMessage('Tenant has been deleted successfully');
     }
 
-    public function suspend(User $tenant)
+    public function suspend($tenant)
     {
+        abort_if(Gate::denies('tenant_management_delete'), Response::HTTP_FORBIDDEN, '403 Forbidden');
+
+        $tenant = User::whereNotNull('domain')->findOrFail($tenant);
+
         $tenant->update([
             'is_suspended' => !$tenant->is_suspended
         ]);

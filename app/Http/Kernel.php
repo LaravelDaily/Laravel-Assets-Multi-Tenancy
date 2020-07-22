@@ -2,6 +2,7 @@
 
 namespace App\Http;
 
+use App\Http\Middleware\AuthGates;
 use App\Http\Middleware\CheckForPassword;
 use App\Http\Middleware\CheckForSuspension;
 use Illuminate\Foundation\Http\Kernel as HttpKernel;
@@ -41,6 +42,7 @@ class Kernel extends HttpKernel
             \Illuminate\Routing\Middleware\SubstituteBindings::class,
             CheckForPassword::class,
             CheckForSuspension::class,
+            AuthGates::class,
         ],
 
         'api' => [

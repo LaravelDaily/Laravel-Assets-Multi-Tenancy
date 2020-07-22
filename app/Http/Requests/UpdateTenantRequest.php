@@ -3,6 +3,8 @@
 namespace App\Http\Requests;
 
 use Illuminate\Foundation\Http\FormRequest;
+use Illuminate\Support\Facades\Gate;
+use Symfony\Component\HttpFoundation\Response;
 
 class UpdateTenantRequest extends FormRequest
 {
@@ -13,6 +15,8 @@ class UpdateTenantRequest extends FormRequest
      */
     public function authorize()
     {
+        abort_if(Gate::denies('tenant_management_edit'), Response::HTTP_FORBIDDEN, '403 Forbidden');
+
         return true;
     }
 
@@ -28,10 +32,10 @@ class UpdateTenantRequest extends FormRequest
                 'required', 'string',
             ],
             'email' => [
-                'required', 'email', 'unique:users,email,' . request()->route('tenant')->id,
+                'required', 'email', 'unique:users,email,' . request()->route('tenant'),
             ],
             'domain' => [
-                'required', 'alpha_num', 'unique:users,domain,' . request()->route('tenant')->id,
+                'required', 'alpha_num', 'unique:users,domain,' . request()->route('tenant'),
             ],
         ];
     }

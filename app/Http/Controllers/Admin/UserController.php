@@ -9,7 +9,9 @@ use App\Notifications\UserInvitation;
 use App\Role;
 use App\User;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Gate;
 use Illuminate\Support\Facades\URL;
+use Symfony\Component\HttpFoundation\Response;
 use Yajra\DataTables\Facades\DataTables;
 
 class UserController extends Controller
@@ -23,6 +25,8 @@ class UserController extends Controller
      */
     public function index(Request $request)
     {
+        abort_if(Gate::denies('user_management_access'), Response::HTTP_FORBIDDEN, '403 Forbidden');
+
         if ($request->ajax()) {
             $query = User::query()
                         ->select(sprintf('%s.*', (new User)->getTable()))
@@ -32,9 +36,10 @@ class UserController extends Controller
             $table->addColumn('actions', '&nbsp;');
 
             $table->editColumn('actions', function ($row) {
-                $crudRoutePart = 'users';
+                $crudRoutePart    = 'users';
+                $permissionPrefix = 'user_management_';
 
-                return view('partials.datatableActions', compact('crudRoutePart', 'row'));
+                return view('partials.datatableActions', compact('crudRoutePart', 'row', 'permissionPrefix'));
             });
 
             $table->editColumn('id', function ($row) {
@@ -65,6 +70,8 @@ class UserController extends Controller
      */
     public function create()
     {
+        abort_if(Gate::denies('user_management_create'), Response::HTTP_FORBIDDEN, '403 Forbidden');
+
         $roles = Role::pluck('title', 'id');
 
         return view('admin.users.create', compact('roles'));
@@ -78,10 +85,6 @@ class UserController extends Controller
      */
     public function store(StoreUserRequest $request)
     {
-        $request->validate([
-            'role_id' => 'integer|in:' . Role::pluck('id')->implode(','),
-        ]);
-
         $user = User::create($request->only([
             'name', 'email',
         ]));
@@ -103,6 +106,8 @@ class UserController extends Controller
      */
     public function show($user)
     {
+        abort_if(Gate::denies('user_management_show'), Response::HTTP_FORBIDDEN, '403 Forbidden');
+
         $user = User::where('tenant_id', auth()->id())->findOrFail($user);
 
         return view('admin.users.show', compact('user'));
@@ -116,6 +121,8 @@ class UserController extends Controller
      */
     public function edit($user)
     {
+        abort_if(Gate::denies('user_management_edit'), Response::HTTP_FORBIDDEN, '403 Forbidden');
+
         $user = User::where('tenant_id', auth()->id())->findOrFail($user);
 
         $roles = Role::pluck('title', 'id');
@@ -135,10 +142,6 @@ class UserController extends Controller
     public function update(UpdateUserRequest $request, $user)
     {
         $user = User::where('tenant_id', auth()->id())->findOrFail($user);
-
-        $request->validate([
-            'role_id' => 'integer|in:' . Role::pluck('id')->implode(','),
-        ]);
 
         $user->update($request->only([
             'name', 'email'
@@ -160,6 +163,8 @@ class UserController extends Controller
      */
     public function destroy($user)
     {
+        abort_if(Gate::denies('user_management_delete'), Response::HTTP_FORBIDDEN, '403 Forbidden');
+
         User::where('tenant_id', auth()->id())
             ->findOrFail($user)
             ->delete();

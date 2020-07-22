@@ -88,9 +88,4 @@ class User extends Authenticatable
     {
         return $this->belongsToMany(Role::class);
     }
-
-    public function scopeTenantUsers($query)
-    {
-        return $query->where('tenant_id', auth()->id());
-    }
 }

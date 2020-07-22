@@ -36,7 +36,7 @@
                     Domain
                 </th>
                 <td>
-                    {!! $tenant->domain ? '<a href="' . route('tenant', $tenant) . '">' . route('tenant', $tenant) . '</a>' : '' !!}
+                    {!! $tenant->domain ? '<a href="' . route('tenant.show', $tenant) . '">' . route('tenant.show', $tenant) . '</a>' : '' !!}
                 </td>
             </tr>
         </table>

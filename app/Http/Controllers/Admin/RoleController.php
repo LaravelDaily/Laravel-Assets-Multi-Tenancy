@@ -7,7 +7,9 @@ use App\Http\Requests\StoreRoleRequest;
 use App\Http\Requests\UpdateRoleRequest;
 use App\Role;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Gate;
 use Illuminate\Support\Facades\URL;
+use Symfony\Component\HttpFoundation\Response;
 use Yajra\DataTables\Facades\DataTables;
 
 class RoleController extends Controller
@@ -21,6 +23,8 @@ class RoleController extends Controller
      */
     public function index(Request $request)
     {
+        abort_if(Gate::denies('role_management_access'), Response::HTTP_FORBIDDEN, '403 Forbidden');
+
         if ($request->ajax()) {
             $query = Role::query()->select(sprintf('%s.*', (new Role)->getTable()));
             $table = DataTables::of($query);
@@ -28,9 +32,10 @@ class RoleController extends Controller
             $table->addColumn('actions', '&nbsp;');
 
             $table->editColumn('actions', function ($row) {
-                $crudRoutePart = 'roles';
+                $crudRoutePart    = 'roles';
+                $permissionPrefix = 'role_management_';
 
-                return view('partials.datatableActions', compact('crudRoutePart', 'row'));
+                return view('partials.datatableActions', compact('crudRoutePart', 'row', 'permissionPrefix'));
             });
 
             $table->editColumn('id', function ($row) {
@@ -55,7 +60,14 @@ class RoleController extends Controller
      */
     public function create()
     {
-        return view('admin.roles.create');
+        abort_if(Gate::denies('role_management_create'), Response::HTTP_FORBIDDEN, '403 Forbidden');
+
+        $permissions = Role::withoutGlobalScopes()
+            ->findOrFail(3)
+            ->permissions()
+            ->pluck('title', 'id');
+
+        return view('admin.roles.create', compact('permissions'));
     }
 
     /**w
@@ -66,9 +78,11 @@ class RoleController extends Controller
      */
     public function store(StoreRoleRequest $request)
     {
-        Role::create($request->only([
+        $role = Role::create($request->only([
             'title',
         ]));
+
+        $role->permissions()->sync($request->input('permissions', []));
 
         return redirect()->route('admin.roles.index')->withMessage('Role has been created successfully');
     }
@@ -81,6 +95,10 @@ class RoleController extends Controller
      */
     public function show(Role $role)
     {
+        abort_if(Gate::denies('role_management_show'), Response::HTTP_FORBIDDEN, '403 Forbidden');
+
+        $role->load('permissions');
+
         return view('admin.roles.show', compact('role'));
     }
 
@@ -92,7 +110,15 @@ class RoleController extends Controller
      */
     public function edit(Role $role)
     {
-        return view('admin.roles.edit', compact('role'));
+        abort_if(Gate::denies('role_management_edit'), Response::HTTP_FORBIDDEN, '403 Forbidden');
+
+        $role->load('permissions');
+        $permissions = Role::withoutGlobalScopes()
+            ->findOrFail(3)
+            ->permissions()
+            ->pluck('title', 'id');
+
+        return view('admin.roles.edit', compact('role', 'permissions'));
     }
 
     /**
@@ -104,9 +130,15 @@ class RoleController extends Controller
      */
     public function update(UpdateRoleRequest $request, Role $role)
     {
+        $role->load('permissions');
+
         $role->update($request->only([
             'title',
         ]));
+
+        if ($role->permissions->pluck('id')->toArray() != $request->input('permissions', [])) {
+            $role->permissions()->sync($request->input('permissions', []));
+        }
 
         return redirect()->route('admin.roles.index')->withMessage('Role has been updated successfully');
     }
@@ -119,6 +151,8 @@ class RoleController extends Controller
      */
     public function destroy(Role $role)
     {
+        abort_if(Gate::denies('role_management_delete'), Response::HTTP_FORBIDDEN, '403 Forbidden');
+
         $role->delete();
 
         return redirect()->back()->withMessage('Role has been deleted successfully');

@@ -15,7 +15,7 @@
                 Home
             </a>
         </li>
-        @if (auth()->user()->is_admin)
+        @can('tenant_management_access')
             <li class="c-sidebar-nav-item">
                 <a href="{{ route("admin.tenants.index") }}" class="c-sidebar-nav-link">
                     <i class="c-sidebar-nav-icon fas fa-fw fa-user">
@@ -24,7 +24,8 @@
                     Tenant management
                 </a>
             </li>
-        @elseif (auth()->user()->is_tenant_admin)
+        @endcan
+        @can('user_management_access')
             <li class="c-sidebar-nav-item">
                 <a href="{{ route("admin.users.index") }}" class="c-sidebar-nav-link">
                     <i class="c-sidebar-nav-icon fas fa-fw fa-user">
@@ -33,6 +34,8 @@
                     User management
                 </a>
             </li>
+        @endcan
+        @can('role_management_access')
             <li class="c-sidebar-nav-item">
                 <a href="{{ route("admin.roles.index") }}" class="c-sidebar-nav-link">
                     <i class="c-sidebar-nav-icon fas fa-fw fa-user">
@@ -41,7 +44,7 @@
                     Role management
                 </a>
             </li>
-        @endif
+        @endcan
         <li class="c-sidebar-nav-item">
             <a href="{{ route("admin.profile.edit") }}" class="c-sidebar-nav-link">
                 <i class="c-sidebar-nav-icon fas fa-fw fa-user">
