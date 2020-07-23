@@ -16,9 +16,11 @@
                         </div>
                     @endif
 
-                    <div class="form-group">
-                        <a href="{{ route('admin.tenants.create') }}" class="btn btn-success">Create tenant</a>
-                    </div>
+                    @can('tenant_management_create')
+                        <div class="form-group">
+                            <a href="{{ route('admin.tenants.create') }}" class="btn btn-success">Create tenant</a>
+                        </div>
+                    @endcan
                     <table class=" table table-bordered table-striped table-hover ajaxTable datatable">
                         <thead>
                             <tr>

@@ -45,6 +45,16 @@
                 </a>
             </li>
         @endcan
+        @can('asset_group_management_access')
+            <li class="c-sidebar-nav-item">
+                <a href="{{ route("admin.asset-groups.index") }}" class="c-sidebar-nav-link">
+                    <i class="c-sidebar-nav-icon fas fa-fw fa-list">
+
+                    </i>
+                    Asset groups management
+                </a>
+            </li>
+        @endcan
         <li class="c-sidebar-nav-item">
             <a href="{{ route("admin.profile.edit") }}" class="c-sidebar-nav-link">
                 <i class="c-sidebar-nav-icon fas fa-fw fa-user">

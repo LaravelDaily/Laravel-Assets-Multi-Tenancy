@@ -38,6 +38,8 @@ Route::group(['as' => 'admin.', 'namespace' => 'Admin', 'prefix' => 'admin', 'mi
 
     Route::resource('roles', 'RoleController');
 
+    Route::resource('asset-groups', 'AssetGroupController');
+
     Route::get('profile', 'ProfileController@edit')->name('profile.edit');
 
     Route::put('profile', 'ProfileController@update')->name('profile.update');

@@ -41,7 +41,7 @@ class User extends Authenticatable
     ];
 
     protected $cascadeDeletes = [
-        'tenantUsers'
+        'tenantUsers', 'roles', 'assetGroups',
     ];
 
     protected $with = [
@@ -87,5 +87,10 @@ class User extends Authenticatable
     public function roles()
     {
         return $this->belongsToMany(Role::class);
+    }
+
+    public function assetGroups()
+    {
+        return $this->hasMany(AssetGroup::class, 'tenant_id');
     }
 }

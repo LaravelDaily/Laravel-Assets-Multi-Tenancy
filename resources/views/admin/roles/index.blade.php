@@ -16,9 +16,11 @@
                         </div>
                     @endif
 
-                    <div class="form-group">
-                        <a href="{{ route('admin.roles.create') }}" class="btn btn-success">Create role</a>
-                    </div>
+                    @can('role_management_create')
+                        <div class="form-group">
+                            <a href="{{ route('admin.roles.create') }}" class="btn btn-success">Create role</a>
+                        </div>
+                    @endcan
                     <table class=" table table-bordered table-striped table-hover ajaxTable datatable">
                         <thead>
                         <tr>
