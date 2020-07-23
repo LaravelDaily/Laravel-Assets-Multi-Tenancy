@@ -2,21 +2,21 @@
 
 namespace App;
 
-use App\Traits\MultiTenantAssetGroupTrait;
+use App\Traits\MultiTenantAssetTrait;
 use Iatstuti\Database\Support\CascadeSoftDeletes;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\SoftDeletes;
 
 class AssetGroup extends Model
 {
-    use SoftDeletes, CascadeSoftDeletes, MultiTenantAssetGroupTrait;
+    use SoftDeletes, CascadeSoftDeletes, MultiTenantAssetTrait;
 
     protected $fillable = [
         'name', 'parent_id', 'tenant_id',
     ];
 
     protected $cascadeDeletes = [
-        'children',
+        'children', 'assets',
     ];
 
     public function parent()
@@ -32,5 +32,10 @@ class AssetGroup extends Model
     public function tenant()
     {
         return $this->belongsTo(User::class, 'tenant_id');
+    }
+
+    public function assets()
+    {
+        return $this->hasMany(Asset::class, 'sub_group_id');
     }
 }

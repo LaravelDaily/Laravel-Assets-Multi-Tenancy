@@ -55,6 +55,16 @@
                 </a>
             </li>
         @endcan
+        @can('asset_management_access')
+            <li class="c-sidebar-nav-item">
+                <a href="{{ route("admin.assets.index") }}" class="c-sidebar-nav-link">
+                    <i class="c-sidebar-nav-icon fas fa-fw fa-industry">
+
+                    </i>
+                    Asset management
+                </a>
+            </li>
+        @endcan
         <li class="c-sidebar-nav-item">
             <a href="{{ route("admin.profile.edit") }}" class="c-sidebar-nav-link">
                 <i class="c-sidebar-nav-icon fas fa-fw fa-user">
