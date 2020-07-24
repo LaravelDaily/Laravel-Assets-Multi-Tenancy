@@ -49,6 +49,31 @@
                                     &nbsp;
                                 </th>
                             </tr>
+                            <tr>
+                                <td>
+                                    <input class="search" type="text" placeholder="Search">
+                                </td>
+                                <td>
+                                    <input class="search" type="text" placeholder="Search">
+                                </td>
+                                <td>
+                                    <input class="search" type="text" placeholder="Search">
+                                </td>
+                                <td>
+                                    <input class="search" type="text" placeholder="Search">
+                                </td>
+                                <td>
+                                    <input class="search" type="text" placeholder="Search">
+                                </td>
+                                <td>
+                                    <input class="search" type="text" placeholder="Search">
+                                </td>
+                                <td>
+                                    <input class="search" type="text" placeholder="Search">
+                                </td>
+                                <td>
+                                </td>
+                            </tr>
                             </thead>
                         </table>
                     </div>
@@ -57,6 +82,18 @@
         </div>
     </div>
 @endsection
+
+@section('styles')
+<style>
+    .datatable thead tr:nth-of-type(2) td {
+        padding: 0.25rem 0.5rem;
+    }
+    input.search {
+        width: 100%;
+    }
+</style>
+@endsection
+
 @section('scripts')
 @parent
 <script>
@@ -84,6 +121,14 @@
         $('a[data-toggle="tab"]').on('shown.bs.tab click', function(e){
             $($.fn.dataTable.tables(true)).DataTable()
                 .columns.adjust();
+        });
+        $('.datatable thead').on('input', '.search', function () {
+            let strict = $(this).attr('strict') || false
+            let value = strict && this.value ? "^" + this.value + "$" : this.value
+            table
+                .column($(this).parent().index())
+                .search(value, strict)
+                .draw()
         });
 
     });
