@@ -79,4 +79,50 @@
         </div>
     </div>
 </div>
+
+<div class="card">
+    <div class="card-header">
+        Related data
+    </div>
+    <ul class="nav nav-tabs" role="tablist" id="relationship-tabs">
+        @can('image_management_access')
+            <li class="nav-item">
+                <a class="nav-link" href="#images" role="tab" data-toggle="tab">
+                    Images
+                </a>
+            </li>
+        @endcan
+        @can('document_management_access')
+            <li class="nav-item">
+                <a class="nav-link" href="#documents" role="tab" data-toggle="tab">
+                    Documents
+                </a>
+            </li>
+        @endcan
+        @can('note_management_access')
+            <li class="nav-item">
+                <a class="nav-link" href="#notes" role="tab" data-toggle="tab">
+                    Notes
+                </a>
+            </li>
+        @endcan
+    </ul>
+    <div class="tab-content">
+        @can('image_management_access')
+            <div class="tab-pane p-2" role="tabpanel" id="images">
+                @includeIf('admin.assets.relationships.images', ['id' => $asset->id])
+            </div>
+        @endcan
+        @can('document_management_access')
+            <div class="tab-pane p-2" role="tabpanel" id="documents">
+                @includeIf('admin.assets.relationships.documents', ['id' => $asset->id])
+            </div>
+        @endcan
+        @can('note_management_access')
+            <div class="tab-pane p-2" role="tabpanel" id="notes">
+                @includeIf('admin.assets.relationships.notes', ['id' => $asset->id])
+            </div>
+        @endcan
+    </div>
+</div>
 @endsection

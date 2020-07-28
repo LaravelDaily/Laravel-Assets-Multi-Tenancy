@@ -16,6 +16,7 @@
         "laravel/framework": "^7.0",
         "laravel/tinker": "^2.0",
         "laravel/ui": "^2.1",
+        "spatie/laravel-medialibrary": "^7.19",
         "yajra/laravel-datatables-oracle": "^9.10"
     },
     "require-dev": {

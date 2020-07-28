@@ -42,6 +42,16 @@ Route::group(['as' => 'admin.', 'namespace' => 'Admin', 'prefix' => 'admin', 'mi
 
     Route::resource('assets', 'AssetController');
 
+    Route::post('images/media', 'ImageController@storeMedia')->name('images.storeMedia');
+
+    Route::resource('images', 'ImageController');
+
+    Route::post('documents/media', 'DocumentController@storeMedia')->name('documents.storeMedia');
+
+    Route::resource('documents', 'DocumentController');
+
+    Route::resource('notes', 'NoteController');
+
     Route::get('profile', 'ProfileController@edit')->name('profile.edit');
 
     Route::put('profile', 'ProfileController@update')->name('profile.update');

@@ -65,6 +65,36 @@
                 </a>
             </li>
         @endcan
+        @can('image_management_access')
+            <li class="c-sidebar-nav-item">
+                <a href="{{ route("admin.images.index") }}" class="c-sidebar-nav-link">
+                    <i class="c-sidebar-nav-icon fas fa-fw fa-image">
+
+                    </i>
+                    Image management
+                </a>
+            </li>
+        @endcan
+        @can('document_management_access')
+            <li class="c-sidebar-nav-item">
+                <a href="{{ route("admin.documents.index") }}" class="c-sidebar-nav-link">
+                    <i class="c-sidebar-nav-icon fas fa-fw fa-file">
+
+                    </i>
+                    Document management
+                </a>
+            </li>
+        @endcan
+        @can('note_management_access')
+            <li class="c-sidebar-nav-item">
+                <a href="{{ route("admin.notes.index") }}" class="c-sidebar-nav-link">
+                    <i class="c-sidebar-nav-icon fas fa-fw fa-sticky-note">
+
+                    </i>
+                    Note management
+                </a>
+            </li>
+        @endcan
         <li class="c-sidebar-nav-item">
             <a href="{{ route("admin.profile.edit") }}" class="c-sidebar-nav-link">
                 <i class="c-sidebar-nav-icon fas fa-fw fa-user">
